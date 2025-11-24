@@ -21,8 +21,18 @@ const Home = () => {
                 const bannersData = await bannersRes.json();
 
                 // Get top 4 products (or random 4)
-                setFeaturedProducts(products.slice(0, 4));
-                setBanners(bannersData);
+                if (Array.isArray(products)) {
+                    setFeaturedProducts(products.slice(0, 4));
+                } else {
+                    console.error('Products API returned non-array:', products);
+                }
+
+                if (Array.isArray(bannersData)) {
+                    setBanners(bannersData);
+                } else {
+                    console.error('Banners API returned non-array:', bannersData);
+                }
+
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching home data:', error);

@@ -1,5 +1,6 @@
 // API Configuration for development and production
-const API_URL = import.meta.env.VITE_API_URL || '';
+// We use relative paths ('') so that Vercel rewrites in vercel.json handle the routing to the backend.
+const API_URL = '';
 
 export const getApiUrl = () => API_URL;
 

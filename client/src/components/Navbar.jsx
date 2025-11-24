@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectCartCount } from '../redux/slices/cartSlice';
 import { selectUser, logout } from '../redux/slices/authSlice';
 import Button from './Button';
+import API_URL from '../utils/api';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -17,7 +18,7 @@ const Navbar = () => {
     const [storeName, setStoreName] = useState('FUSION KUIPER');
 
     useEffect(() => {
-        fetch('http://localhost:5000/api/settings')
+        fetch(`${API_URL}/api/settings`)
             .then(res => res.json())
             .then(data => {
                 if (data.storeName) setStoreName(data.storeName);

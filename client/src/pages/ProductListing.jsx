@@ -20,10 +20,18 @@ const ProductListing = () => {
         fetch(`${API_URL}/api/products`)
             .then(res => res.json())
             .then(data => {
-                setProducts(data);
+                if (Array.isArray(data)) {
+                    setProducts(data);
+                } else {
+                    console.error('API returned non-array data:', data);
+                    setProducts([]);
+                }
                 setLoading(false);
             })
-            .catch(err => console.error('Error fetching products:', err));
+            .catch(err => {
+                console.error('Error fetching products:', err);
+                setLoading(false);
+            });
     }, []);
 
     // Filter Logic
