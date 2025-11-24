@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { Filter } from 'lucide-react';
+import API_URL from '../utils/api';
 
 const ProductListing = () => {
     const [products, setProducts] = useState([]);
