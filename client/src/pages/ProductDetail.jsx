@@ -26,7 +26,7 @@ const ProductDetail = () => {
     const [relatedProducts, setRelatedProducts] = useState([]);
 
     useEffect(() => {
-        fetch(`http://localhost:5000/api/products/${id}`)
+        fetch(`${API_URL}/api/products/${id}`)
             .then(res => res.json())
             .then(data => {
                 if (data && !data.images && data.image) {
@@ -39,7 +39,7 @@ const ProductDetail = () => {
                 setLoading(false);
 
                 // Fetch related products
-                fetch(`http://localhost:5000/api/products/${id}/related`)
+                fetch(`${API_URL}/api/products/${id}/related`)
                     .then(res => res.json())
                     .then(related => setRelatedProducts(related))
                     .catch(err => console.error('Error fetching related products:', err));
@@ -195,7 +195,7 @@ const Reviews = ({ productId }) => {
     const user = useSelector(selectUser);
 
     useEffect(() => {
-        fetch(`http://localhost:5000/api/products/${productId}/reviews`)
+        fetch(`${API_URL}/api/products/${productId}/reviews`)
             .then(res => res.json())
             .then(data => setReviews(data))
             .catch(err => console.error(err));
@@ -205,7 +205,7 @@ const Reviews = ({ productId }) => {
         e.preventDefault();
         if (!user) return alert('Please login to review');
 
-        fetch(`http://localhost:5000/api/products/${productId}/reviews`, {
+        fetch(`${API_URL}/api/products/${productId}/reviews`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

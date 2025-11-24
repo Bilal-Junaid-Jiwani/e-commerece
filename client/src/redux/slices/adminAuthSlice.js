@@ -33,7 +33,7 @@ export const { adminLoginSuccess, adminLogout } = adminAuthSlice.actions;
 // Thunks for async API logic
 export const loginAdmin = (email, password) => async (dispatch) => {
     try {
-        const response = await fetch('http://localhost:5000/api/admin/login', {
+        const response = await fetch(`${API_URL}/api/admin/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password }),
@@ -54,7 +54,7 @@ export const loginAdmin = (email, password) => async (dispatch) => {
 
 export const registerAdmin = (userData) => async (dispatch) => {
     try {
-        const response = await fetch('http://localhost:5000/api/admin/register', {
+        const response = await fetch(`${API_URL}/api/admin/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(userData),

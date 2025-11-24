@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import API_URL from '../../utils/api';
 
 const loadUser = () => {
     try {
@@ -37,7 +38,7 @@ export const { loginSuccess, logout, updateProfileSuccess } = authSlice.actions;
 // Thunks for async API logic
 export const loginUser = (email, password) => async (dispatch) => {
     try {
-        const response = await fetch('http://localhost:5000/api/login', {
+        const response = await fetch(`${API_URL}/api/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password }),
@@ -58,7 +59,7 @@ export const loginUser = (email, password) => async (dispatch) => {
 
 export const registerUser = (userData) => async (dispatch) => {
     try {
-        const response = await fetch('http://localhost:5000/api/register', {
+        const response = await fetch(`${API_URL}/api/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(userData),
@@ -84,7 +85,7 @@ export const updateUserProfile = (updatedData) => async (dispatch, getState) => 
     if (!currentUser) return { success: false, message: 'Not logged in' };
 
     try {
-        const response = await fetch('http://localhost:5000/api/auth/profile', {
+        const response = await fetch(`${API_URL}/api/auth/profile`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: currentUser.email, ...updatedData }),

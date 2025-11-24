@@ -16,7 +16,7 @@ const ProductListing = () => {
     const [visibleCount, setVisibleCount] = useState(6);
 
     useEffect(() => {
-        fetch('http://localhost:5000/api/products')
+        fetch(`${API_URL}/api/products`)
             .then(res => res.json())
             .then(data => {
                 setProducts(data);

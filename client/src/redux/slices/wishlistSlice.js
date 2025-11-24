@@ -1,8 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import API_URL from '../../utils/api';
 
 // Async Thunks
 export const fetchWishlist = createAsyncThunk('wishlist/fetchWishlist', async (userId) => {
-    const response = await fetch(`http://localhost:5000/api/wishlist/${userId}`);
+    const response = await fetch(`${API_URL}/api/wishlist/${userId}`);
     if (!response.ok) throw new Error('Failed to fetch wishlist');
     return await response.json();
 });
@@ -18,11 +19,11 @@ export const toggleWishlist = createAsyncThunk('wishlist/toggleWishlist', async 
     let response;
 
     if (exists) {
-        response = await fetch(`http://localhost:5000/api/wishlist/${auth.user.id}/${product.id}`, {
+        response = await fetch(`${API_URL}/api/wishlist/${auth.user.id}/${product.id}`, {
             method: 'DELETE'
         });
     } else {
-        response = await fetch('http://localhost:5000/api/wishlist', {
+        response = await fetch(`${API_URL}/api/wishlist`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId: auth.user.id, productId: product.id }),

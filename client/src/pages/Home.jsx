@@ -12,8 +12,8 @@ const Home = () => {
         const fetchData = async () => {
             try {
                 const [productsRes, bannersRes] = await Promise.all([
-                    fetch('http://localhost:5000/api/products'),
-                    fetch('http://localhost:5000/api/banners')
+                    fetch(`${API_URL}/api/products`),
+                    fetch(`${API_URL}/api/banners`)
                 ]);
 
                 const products = await productsRes.json();
