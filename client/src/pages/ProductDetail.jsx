@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../redux/slices/cartSlice';
 import { toggleWishlist, selectIsInWishlist } from '../redux/slices/wishlistSlice';
 import { selectUser } from '../redux/slices/authSlice';
+import API_URL from '../utils/api';
 
 const ProductDetail = () => {
     const { id } = useParams();
