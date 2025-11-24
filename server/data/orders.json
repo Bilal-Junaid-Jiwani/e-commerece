@@ -1,0 +1,252 @@
+[
+  {
+    "id": 1763840369419,
+    "user": {
+      "id": 1763839759588,
+      "email": "bilaljunaidjiwani@gmail.com"
+    },
+    "items": [
+      {
+        "id": 1,
+        "title": "Neon Street Sneakers",
+        "price": "129.00",
+        "category": "Footwear",
+        "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80",
+        "quantity": 1
+      }
+    ],
+    "total": 129,
+    "shipping": {
+      "address": "sahasbj",
+      "city": "as ckb ask",
+      "zip": "79897987",
+      "country": "Pakistan"
+    },
+    "payment": {
+      "method": "Credit Card",
+      "last4": "5252"
+    },
+    "date": "2025-11-22T19:39:29.379Z",
+    "status": "Delivered"
+  },
+  {
+    "id": 1763844333077,
+    "user": {
+      "id": 1763844225161,
+      "email": "zaidjunaidjiwani@gmail.com"
+    },
+    "items": [
+      {
+        "id": 1,
+        "title": "Neon Street Sneakers",
+        "price": "129.00",
+        "category": "Footwear",
+        "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80",
+        "description": "Step into the future with these high-top sneakers featuring neon accents and ultra-comfortable cushioning.",
+        "colors": [
+          "#007BFF",
+          "#FF6B6B",
+          "#39FF14"
+        ],
+        "sizes": [
+          "US 7",
+          "US 8",
+          "US 9",
+          "US 10",
+          "US 11"
+        ],
+        "images": [
+          "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80"
+        ],
+        "selectedColor": "#007BFF",
+        "selectedSize": "US 7",
+        "quantity": 1
+      }
+    ],
+    "total": 129,
+    "shipping": {
+      "address": "babhadh ",
+      "city": "asjfjaskj",
+      "zip": "3589629",
+      "country": "vhsakcbkj asb"
+    },
+    "payment": {
+      "method": "Credit Card",
+      "last4": "8586"
+    },
+    "date": "2025-11-22T20:45:33.041Z",
+    "status": "Delivered"
+  },
+  {
+    "id": 1763844525962,
+    "user": {
+      "id": 1763844225161,
+      "email": "zaidjunaidjiwani@gmail.com"
+    },
+    "items": [
+      {
+        "id": 1,
+        "title": "Neon Street Sneakers",
+        "price": "129.00",
+        "category": "Footwear",
+        "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80",
+        "description": "Step into the future with these high-top sneakers featuring neon accents and ultra-comfortable cushioning.",
+        "colors": [
+          "#007BFF",
+          "#FF6B6B",
+          "#39FF14"
+        ],
+        "sizes": [
+          "US 7",
+          "US 8",
+          "US 9",
+          "US 10",
+          "US 11"
+        ],
+        "images": [
+          "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80"
+        ],
+        "selectedColor": "#007BFF",
+        "selectedSize": "US 7",
+        "quantity": 1
+      }
+    ],
+    "total": 129,
+    "shipping": {
+      "address": "uiabiusfiu ",
+      "city": "agkjshahdoai",
+      "zip": "2t46189",
+      "country": "vk agcbaKB C"
+    },
+    "payment": {
+      "method": "Credit Card",
+      "last4": "9562"
+    },
+    "date": "2025-11-22T20:48:45.926Z",
+    "status": "Cancelled"
+  },
+  {
+    "id": 1763844944965,
+    "user": {
+      "id": 1763844225161,
+      "email": "zaidjunaidjiwani@gmail.com"
+    },
+    "items": [
+      {
+        "id": 2,
+        "title": "Cyberpunk Hoodie",
+        "price": "89.00",
+        "category": "Apparel",
+        "image": "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=800&q=80",
+        "quantity": 1
+      },
+      {
+        "id": 3,
+        "title": "Holographic Backpack",
+        "price": "159.00",
+        "category": "Accessories",
+        "image": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
+        "quantity": 1
+      },
+      {
+        "id": 4,
+        "title": "Digital Watch Pro",
+        "price": "299.00",
+        "category": "Tech",
+        "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80",
+        "quantity": 1
+      }
+    ],
+    "total": 547,
+    "shipping": {
+      "address": "iwtrt7t8qtr8",
+      "city": "qwr7t78qwtr",
+      "zip": "5736296",
+      "country": "32yr98289"
+    },
+    "payment": {
+      "method": "Credit Card",
+      "last4": "8269"
+    },
+    "date": "2025-11-22T20:55:44.957Z",
+    "status": "Shipped"
+  },
+  {
+    "id": 1763844944966,
+    "user": {
+      "id": 1763839759588,
+      "email": "bilaljunaidjiwani@gmail.com"
+    },
+    "items": [
+      {
+        "id": 1,
+        "title": "Neon Street Sneakers",
+        "price": "129.00",
+        "category": "Footwear",
+        "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80",
+        "quantity": 1
+      },
+      {
+        "id": 3,
+        "title": "Holographic Backpack",
+        "price": "159.00",
+        "category": "Accessories",
+        "image": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
+        "quantity": 1
+      },
+      {
+        "id": 4,
+        "title": "Digital Watch Pro",
+        "price": "299.00",
+        "category": "Tech",
+        "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80",
+        "quantity": 1
+      }
+    ],
+    "total": 528.3,
+    "shipping": {
+      "address": "JAHIU HA",
+      "city": " AHOIAO",
+      "zip": "H ACOHASO",
+      "country": "H OIACHIOA SO"
+    },
+    "payment": {
+      "method": "Credit Card",
+      "last4": "9619"
+    },
+    "date": "2025-11-22T22:07:36.958Z",
+    "createdAt": "2025-11-22T22:07:37.002Z",
+    "status": "Delivered"
+  },
+  {
+    "id": 1763961588818,
+    "user": {
+      "id": 1763961530291,
+      "email": "hunain@gmail.com"
+    },
+    "items": [
+      {
+        "id": 1,
+        "title": "Neon Street Sneakers",
+        "price": "129.00",
+        "category": "Footwear",
+        "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80",
+        "quantity": 1
+      }
+    ],
+    "total": 116.1,
+    "shipping": {
+      "address": "PL NO GRW 127 FL NO F 705 AL RAMZAN CLASSIC GARDEN WEST KARACHI",
+      "city": "KARACHI",
+      "zip": "74600",
+      "country": "Pakistan"
+    },
+    "payment": {
+      "method": "Credit Card",
+      "last4": "4768"
+    },
+    "date": "2025-11-24T05:19:48.808Z",
+    "createdAt": "2025-11-24T05:19:48.818Z",
+    "status": "Delivered"
+  }
+]

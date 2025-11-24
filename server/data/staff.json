@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1763848417553,
+    "name": "Junaid",
+    "email": "muhammadjunaidjiwani@gmail.com",
+    "password": "Junaid4kzb",
+    "role": "admin",
+    "createdAt": "2025-11-22T21:53:37.553Z"
+  },
+  {
+    "id": 1763961683495,
+    "name": "Bilal Junaid",
+    "email": "bilaljunaidjiwani@gmail.com",
+    "password": "Junaid4kzb",
+    "role": "admin",
+    "createdAt": "2025-11-24T05:21:23.495Z"
+  }
+]

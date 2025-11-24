@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@layer base {
+    body {
+        @apply bg-white text-gray-900 transition-colors duration-300;
+    }
+
+    :root.dark body {
+        background-color: #030712;
+        /* gray-950 */
+        color: #f3f4f6;
+        /* gray-100 */
+    }
+}
