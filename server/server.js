@@ -1,7 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const fs = require('fs');
-const path = require('path');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
@@ -20,58 +18,10 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://bilal:Junaid4kzb@clust
 mongoose.connect(MONGO_URI)
     .then(() => {
         console.log('✅ Connected to MongoDB');
-        seedData();
     })
     .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
 const STAFF_CODE = 'ADMIN2024';
-
-// Seed Data Function
-const seedData = async () => {
-    try {
-        const productCount = await Product.countDocuments();
-        if (productCount === 0) {
-            const products = require('./data/products');
-            await Product.insertMany(products);
-            console.log('📦 Products seeded');
-        }
-
-        const userCount = await User.countDocuments();
-        if (userCount === 0) {
-            const usersPath = path.join(__dirname, 'data', 'users.json');
-            if (fs.existsSync(usersPath)) {
-                const users = JSON.parse(fs.readFileSync(usersPath, 'utf8'));
-                await User.insertMany(users);
-                console.log('👥 Users seeded');
-            }
-        }
-
-        const orderCount = await Order.countDocuments();
-        if (orderCount === 0) {
-            const ordersPath = path.join(__dirname, 'data', 'orders.json');
-            if (fs.existsSync(ordersPath)) {
-                const orders = JSON.parse(fs.readFileSync(ordersPath, 'utf8'));
-                await Order.insertMany(orders);
-                console.log('📦 Orders seeded');
-            }
-        }
-
-        // Seed other data if needed...
-        const settingsCount = await Settings.countDocuments();
-        if (settingsCount === 0) {
-            await Settings.create({
-                storeName: 'Fusion Kuiper',
-                storeEmail: 'contact@fusionkuiper.com',
-                currency: 'USD',
-                taxRate: 10
-            });
-            console.log('⚙️ Settings seeded');
-        }
-
-    } catch (error) {
-        console.error('Seeding error:', error);
-    }
-};
 
 // Routes
 
@@ -564,6 +514,4 @@ app.get('/api/export/customers', async (req, res) => {
     res.send(csv);
 });
 
-app.listen(PORT, () => {
-    console.log(`✅ Server running on port ${PORT}`);
-});
+module.exports = app;

@@ -11,7 +11,10 @@
     }
   ],
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "server/server.js" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/api/(.*)", "destination": "/server/server.js" },
+    { "source": "/assets/(.*)", "destination": "/client/assets/$1" },
+    { "source": "/favicon.png", "destination": "/client/favicon.png" },
+    { "source": "/vite.svg", "destination": "/client/vite.svg" },
+    { "source": "/(.*)", "destination": "/client/index.html" }
   ]
 }
