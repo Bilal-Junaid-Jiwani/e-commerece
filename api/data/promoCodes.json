@@ -1,0 +1,14 @@
+[
+  {
+    "code": "SAVE10",
+    "discount": 10
+  },
+  {
+    "code": "WELCOME20",
+    "discount": 20
+  },
+  {
+    "code": "SUPER1",
+    "discount": 70
+  }
+]

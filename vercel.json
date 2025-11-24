@@ -2,15 +2,10 @@
     "version": 2,
     "framework": "vite",
     "outputDirectory": "client/dist",
-    "functions": {
-        "server/server.js": {
-            "maxDuration": 10
-        }
-    },
     "rewrites": [
         {
             "source": "/api/(.*)",
-            "destination": "/server/server.js"
+            "destination": "/api"
         },
         {
             "source": "/(.*)",
