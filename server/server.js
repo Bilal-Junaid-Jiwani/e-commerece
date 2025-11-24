@@ -250,9 +250,14 @@ app.post('/api/admin/login', async (req, res) => {
 // All other routes can be added here following the same pattern...
 
 
-app.listen(PORT, async () => {
-    await initializeData();
-    console.log(`✅ Server is running on port ${PORT}`);
-});
+if (require.main === module) {
+    app.listen(PORT, async () => {
+        await initializeData();
+        console.log(`✅ Server is running on port ${PORT}`);
+    });
+} else {
+    // For Vercel, we need to initialize data when the app is imported/used
+    initializeData().catch(console.error);
+}
 
 module.exports = app;
