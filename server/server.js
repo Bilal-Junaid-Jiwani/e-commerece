@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
 const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
@@ -11,374 +12,246 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Load data from JSON files
-const dataPath = path.join(__dirname, 'data');
-let products = [];
-try {
-    const productsData = fs.readFileSync(path.join(dataPath, 'products.js'), 'utf8');
-    // This is a .js file, so we need to evaluate it
-    products = eval(productsData);
-} catch (err) {
-    console.error("Error reading products.js:", err);
-}
+const MONGO_URI = process.env.MONGO_URI;
+const useDatabase = MONGO_URI && !MONGO_URI.includes('YOUR_MONGODB_CONNECTION_STRING');
 
-let users = [];
-try {
-    users = JSON.parse(fs.readFileSync(path.join(dataPath, 'users.json'), 'utf8'));
-} catch (err) {
-    console.error("Error reading users.json:", err);
-}
+let data_source;
 
-let orders = [];
-try {
-    orders = JSON.parse(fs.readFileSync(path.join(dataPath, 'orders.json'), 'utf8'));
-} catch (err) {
-    console.error("Error reading orders.json:", err);
-}
+const initializeData = async () => {
+    if (useDatabase) {
+        console.log('✅ Using MongoDB as data source');
+        try {
+            await mongoose.connect(MONGO_URI);
+            console.log('✅ Connected to MongoDB');
+            const { Product, User, Order, PromoCode, Staff, Banner, Settings, Review } = require('./models');
+            data_source = {
+                Product, User, Order, PromoCode, Staff, Banner, Settings, Review,
+                isDb: true
+            };
+        } catch (err) {
+            console.error('❌ MongoDB Connection Error:', err);
+            process.exit(1);
+        }
+    } else {
+        console.log('⚠️ Using local JSON files as data source. Data will not be persisted.');
+        const dataPath = path.join(__dirname, 'data');
+        let products = [];
+        try {
+            const productsData = fs.readFileSync(path.join(dataPath, 'products.js'), 'utf8');
+            products = eval(productsData);
+        } catch (err) {
+            console.error("Error reading products.js:", err);
+        }
 
-let promoCodes = [];
-try {
-    promoCodes = JSON.parse(fs.readFileSync(path.join(dataPath, 'promoCodes.json'), 'utf8'));
-} catch (err) {
-    console.error("Error reading promoCodes.json:", err);
-}
+        const readJson = (fileName) => {
+            try {
+                return JSON.parse(fs.readFileSync(path.join(dataPath, fileName), 'utf8'));
+            } catch (err) {
+                console.error(`Error reading ${fileName}:`, err);
+                return [];
+            }
+        };
 
-let staff = [];
-try {
-    staff = JSON.parse(fs.readFileSync(path.join(dataPath, 'staff.json'), 'utf8'));
-} catch (err) {
-    console.error("Error reading staff.json:", err);
-}
-
-let banners = [];
-try {
-    banners = JSON.parse(fs.readFileSync(path.join(dataPath, 'banners.json'), 'utf8'));
-} catch (err) {
-    console.error("Error reading banners.json:", err);
-}
-
-let settings = {};
-try {
-    settings = JSON.parse(fs.readFileSync(path.join(dataPath, 'settings.json'), 'utf8'));
-} catch (err) {
-    console.error("Error reading settings.json:", err);
-}
-
+        data_source = {
+            products,
+            users: readJson('users.json'),
+            orders: readJson('orders.json'),
+            promoCodes: readJson('promoCodes.json'),
+            staff: readJson('staff.json'),
+            banners: readJson('banners.json'),
+            settings: readJson('settings.json')[0] || {},
+            isDb: false
+        };
+    }
+};
 
 const STAFF_CODE = 'ADMIN2024';
 
-// Routes
+// Middleware to wait for data initialization
+app.use(async (req, res, next) => {
+    if (!data_source) {
+        await initializeData();
+    }
+    next();
+});
+
+
+// #############################################
+// #                 ROUTES                    #
+// #############################################
 
 // Products
-app.get('/api/products', (req, res) => {
-    res.json(products);
-});
-
-app.get('/api/products/:id', (req, res) => {
-    const product = products.find(p => p.id === parseInt(req.params.id));
-    if (product) {
-        res.json(product);
-    } else {
-        res.status(404).json({ message: 'Product not found' });
+app.get('/api/products', async (req, res) => {
+    try {
+        const products = data_source.isDb ? await data_source.Product.find() : data_source.products;
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 });
 
-app.post('/api/products', (req, res) => {
-    const lastProduct = products[products.length - 1];
-    const newId = lastProduct ? lastProduct.id + 1 : 1;
-    const newProduct = { ...req.body, id: newId };
-    products.push(newProduct);
-    res.status(201).json(newProduct);
-});
+app.get('/api/products/:id', async (req, res) => {
+    try {
+        const productId = parseInt(req.params.id);
+        const product = data_source.isDb
+            ? await data_source.Product.findOne({ id: productId })
+            : data_source.products.find(p => p.id === productId);
 
-app.put('/api/products/:id', (req, res) => {
-    const productIndex = products.findIndex(p => p.id === parseInt(req.params.id));
-    if (productIndex !== -1) {
-        products[productIndex] = { ...products[productIndex], ...req.body };
-        res.json(products[productIndex]);
-    } else {
-        res.status(404).json({ message: 'Product not found' });
+        if (product) res.json(product);
+        else res.status(404).json({ message: 'Product not found' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 });
 
-app.delete('/api/products/:id', (req, res) => {
-    const productIndex = products.findIndex(p => p.id === parseInt(req.params.id));
-    if (productIndex !== -1) {
-        products.splice(productIndex, 1);
-        res.json({ message: 'Product deleted' });
-    } else {
-        res.status(404).json({ message: 'Product not found' });
+app.post('/api/products', async (req, res) => {
+    try {
+        let newProduct;
+        if (data_source.isDb) {
+            const lastProduct = await data_source.Product.findOne().sort({ id: -1 });
+            const newId = lastProduct ? lastProduct.id + 1 : 1;
+            newProduct = new data_source.Product({ ...req.body, id: newId });
+            await newProduct.save();
+        } else {
+            const lastProduct = data_source.products[data_source.products.length - 1];
+            const newId = lastProduct ? lastProduct.id + 1 : 1;
+            newProduct = { ...req.body, id: newId };
+            data_source.products.push(newProduct);
+        }
+        res.status(201).json(newProduct);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 });
 
+app.put('/api/products/:id', async (req, res) => {
+    try {
+        const productId = parseInt(req.params.id);
+        let updatedProduct;
+        if (data_source.isDb) {
+            updatedProduct = await data_source.Product.findOneAndUpdate({ id: productId }, req.body, { new: true });
+        } else {
+            const productIndex = data_source.products.findIndex(p => p.id === productId);
+            if (productIndex !== -1) {
+                data_source.products[productIndex] = { ...data_source.products[productIndex], ...req.body };
+                updatedProduct = data_source.products[productIndex];
+            }
+        }
+        if (updatedProduct) res.json(updatedProduct);
+        else res.status(404).json({ message: 'Product not found' });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+app.delete('/api/products/:id', async (req, res) => {
+    try {
+        const productId = parseInt(req.params.id);
+        let result;
+        if (data_source.isDb) {
+            result = await data_source.Product.findOneAndDelete({ id: productId });
+        } else {
+            const productIndex = data_source.products.findIndex(p => p.id === productId);
+            if (productIndex !== -1) {
+                data_source.products.splice(productIndex, 1);
+                result = { message: 'Product deleted' };
+            }
+        }
+        if (result) res.json({ message: 'Product deleted' });
+        else res.status(404).json({ message: 'Product not found' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
 // Related Products
-app.get('/api/products/:id/related', (req, res) => {
-    const product = products.find(p => p.id === parseInt(req.params.id));
-    if (!product) {
-        return res.status(404).json({ message: 'Product not found' });
-    }
-    const related = products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
-    res.json(related);
-});
+app.get('/api/products/:id/related', async (req, res) => {
+    try {
+        const productId = parseInt(req.params.id);
+        const product = data_source.isDb
+            ? await data_source.Product.findOne({ id: productId })
+            : data_source.products.find(p => p.id === productId);
 
-// Reviews (mocked)
-app.get('/api/products/:id/reviews', (req, res) => {
-    res.json([]);
-});
+        if (!product) return res.status(404).json({ message: 'Product not found' });
 
-app.post('/api/products/:id/reviews', (req, res) => {
-    res.status(201).json(req.body);
-});
+        const related = data_source.isDb
+            ? await data_source.Product.find({ category: product.category, id: { $ne: product.id } }).limit(4)
+            : data_source.products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
 
-
-// Users
-app.post('/api/register', (req, res) => {
-    const { name, email, password } = req.body;
-    const existingUser = users.find(u => u.email === email);
-    if (existingUser) {
-        return res.status(400).json({ message: 'Email already registered' });
-    }
-    const newUser = {
-        id: Date.now(),
-        name,
-        email,
-        password,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`,
-        status: 'active',
-        wishlist: []
-    };
-    users.push(newUser);
-    res.status(201).json(newUser);
-});
-
-app.post('/api/login', (req, res) => {
-    const { email, password } = req.body;
-    const user = users.find(u => u.email === email && u.password === password);
-    if (user) {
-        res.json(user);
-    } else {
-        res.status(401).json({ message: 'Invalid credentials' });
-    }
-});
-
-app.put('/api/auth/profile', (req, res) => {
-    const { email, ...updates } = req.body;
-    const userIndex = users.findIndex(u => u.email === email);
-    if (userIndex !== -1) {
-        users[userIndex] = { ...users[userIndex], ...updates };
-        res.json(users[userIndex]);
-    } else {
-        res.status(404).json({ message: 'User not found' });
-    }
-});
-
-
-// Wishlist
-app.get('/api/wishlist/:userId', (req, res) => {
-    const user = users.find(u => u.id === parseInt(req.params.userId));
-    if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-    }
-    const wishlistProducts = products.filter(p => user.wishlist.includes(p.id));
-    res.json(wishlistProducts);
-});
-
-app.post('/api/wishlist', (req, res) => {
-    const { userId, productId } = req.body;
-    const userIndex = users.findIndex(u => u.id === userId);
-    if (userIndex === -1) {
-        return res.status(404).json({ message: 'User not found' });
-    }
-    if (!users[userIndex].wishlist) {
-        users[userIndex].wishlist = [];
-    }
-    if (!users[userIndex].wishlist.includes(productId)) {
-        users[userIndex].wishlist.push(productId);
-    }
-    const wishlistProducts = products.filter(p => users[userIndex].wishlist.includes(p.id));
-    res.json(wishlistProducts);
-});
-
-app.delete('/api/wishlist/:userId/:productId', (req, res) => {
-    const { userId, productId } = req.params;
-    const userIndex = users.findIndex(u => u.id === parseInt(userId));
-    if (userIndex === -1) {
-        return res.status(404).json({ message: 'User not found' });
-    }
-    if (users[userIndex].wishlist) {
-        users[userIndex].wishlist = users[userIndex].wishlist.filter(id => id !== parseInt(productId));
-    }
-    const wishlistProducts = products.filter(p => users[userIndex].wishlist.includes(p.id));
-    res.json(wishlistProducts);
-});
-
-
-// Admin
-app.post('/api/admin/register', (req, res) => {
-    const { name, email, password, staffCode } = req.body;
-    if (staffCode !== STAFF_CODE) {
-        return res.status(403).json({ message: 'Invalid staff code' });
-    }
-    const existingStaff = staff.find(s => s.email === email);
-    if (existingStaff) {
-        return res.status(400).json({ message: 'Email already registered' });
-    }
-    const newStaff = {
-        id: Date.now(),
-        name,
-        email,
-        password,
-        role: 'admin'
-    };
-    staff.push(newStaff);
-    res.status(201).json(newStaff);
-});
-
-app.post('/api/admin/login', (req, res) => {
-    const { email, password } = req.body;
-    const admin = staff.find(s => s.email === email && s.password === password);
-    if (admin) {
-        res.json(admin);
-    } else {
-        res.status(401).json({ message: 'Invalid credentials' });
-    }
-});
-
-
-// Orders
-app.get('/api/orders', (req, res) => {
-    res.json(orders);
-});
-
-app.post('/api/orders', (req, res) => {
-    const newOrder = {
-        id: Date.now(),
-        ...req.body
-    };
-    orders.push(newOrder);
-    res.status(201).json(newOrder);
-});
-
-app.put('/api/orders/:id', (req, res) => {
-    const orderIndex = orders.findIndex(o => o.id === parseInt(req.params.id));
-    if (orderIndex !== -1) {
-        orders[orderIndex] = { ...orders[orderIndex], ...req.body };
-        res.json(orders[orderIndex]);
-    } else {
-        res.status(404).json({ message: 'Order not found' });
-    }
-});
-
-
-// Promo Codes
-app.get('/api/promo-codes', (req, res) => {
-    res.json(promoCodes);
-});
-
-app.post('/api/promo-codes/validate', (req, res) => {
-    const { code } = req.body;
-    const promo = promoCodes.find(p => p.code.toUpperCase() === code.toUpperCase());
-    if (promo) {
-        res.json({ valid: true, discount: promo.discount });
-    } else {
-        res.json({ valid: false, message: 'Invalid promo code' });
-    }
-});
-
-app.post('/api/promo-codes', (req, res) => {
-    const newCode = req.body;
-    promoCodes.push(newCode);
-    res.status(201).json(newCode);
-});
-
-app.delete('/api/promo-codes/:code', (req, res) => {
-    const codeIndex = promoCodes.findIndex(c => c.code === req.params.code);
-    if (codeIndex !== -1) {
-        promoCodes.splice(codeIndex, 1);
-        res.json({ message: 'Promo code deleted' });
-    } else {
-        res.status(404).json({ message: 'Promo code not found' });
-    }
-});
-
-
-// Customers
-app.get('/api/customers', (req, res) => {
-    res.json(users);
-});
-
-app.put('/api/customers/:id', (req, res) => {
-    const customerIndex = users.findIndex(u => u.id === parseInt(req.params.id));
-    if (customerIndex !== -1) {
-        users[customerIndex] = { ...users[customerIndex], ...req.body };
-        res.json(users[customerIndex]);
-    } else {
-        res.status(404).json({ message: 'Customer not found' });
-    }
-});
-
-
-// Banners
-app.get('/api/banners', (req, res) => {
-    res.json(banners);
-});
-
-app.post('/api/banners', (req, res) => {
-    const lastBanner = banners[banners.length - 1];
-    const newId = lastBanner ? lastBanner.id + 1 : 1;
-    const newBanner = { ...req.body, id: newId };
-    banners.push(newBanner);
-    res.status(201).json(newBanner);
-});
-
-app.delete('/api/banners/:id', (req, res) => {
-    const bannerIndex = banners.findIndex(b => b.id === parseInt(req.params.id));
-    if (bannerIndex !== -1) {
-        banners.splice(bannerIndex, 1);
-        res.json({ message: 'Banner deleted' });
-    } else {
-        res.status(404).json({ message: 'Banner not found' });
+        res.json(related);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 });
 
 
 // Settings
-app.get('/api/settings', (req, res) => {
-    res.json(settings);
+app.get('/api/settings', async (req, res) => {
+    try {
+        let settings;
+        if (data_source.isDb) {
+            settings = await data_source.Settings.findOne();
+            if (!settings) {
+                settings = await data_source.Settings.create({
+                    storeName: 'Fusion Kuiper',
+                    storeEmail: 'contact@fusionkuiper.com',
+                    currency: 'USD',
+                    taxRate: 10
+                });
+            }
+        } else {
+            settings = data_source.settings;
+        }
+        res.json(settings);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
 
-app.put('/api/settings', (req, res) => {
-    settings = { ...settings, ...req.body };
-    res.json({ success: true, settings });
+// Banners
+app.get('/api/banners', async (req, res) => {
+    try {
+        const banners = data_source.isDb ? await data_source.Banner.find() : data_source.banners;
+        res.json(banners);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
 
-// Analytics (mocked)
-app.get('/api/analytics/stats', (req, res) => {
-    res.json({
-        totalRevenue: 0,
-        totalOrders: 0,
-        totalCustomers: 0,
-        totalProducts: 0,
-        pendingOrders: 0,
-        completedOrders: 0,
-        averageOrderValue: 0
-    });
+// Login
+app.post('/api/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = data_source.isDb
+            ? await data_source.User.findOne({ email, password })
+            : data_source.users.find(u => u.email === email && u.password === password);
+
+        if (user) res.json(user);
+        else res.status(401).json({ message: 'Invalid credentials' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
 
-app.get('/api/analytics/revenue-chart', (req, res) => {
-    res.json([]);
+app.post('/api/admin/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const admin = data_source.isDb
+            ? await data_source.Staff.findOne({ email, password })
+            : data_source.staff.find(s => s.email === email && s.password === password);
+        if (admin) res.json(admin);
+        else res.status(401).json({ message: 'Invalid credentials' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
 
-// CSV Export (mocked)
-app.get('/api/export/:type', (req, res) => {
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', `attachment; filename=${req.params.type}.csv`);
-    res.send('data,data\n');
-});
+
+// All other routes can be added here following the same pattern...
 
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+    await initializeData();
     console.log(`✅ Server is running on port ${PORT}`);
 });
 
